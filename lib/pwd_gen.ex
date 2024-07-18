@@ -51,11 +51,11 @@ defmodule PwdGen do
     length_to_integer = options["length"] |> String.trim() |> String.to_integer()
     options_without_length = Map.delete(options, "length")
     new_arr = ["lowercase_letter" | extracted_true_values(options_without_length)]
-    IO.puts("#{inspect(extracted_true_values(options_without_length))}")
-    random_char_arr = Enum.map(new_arr, &get/1)
-    length = length_to_integer - length(random_char_arr)
-    random_strings = generate_password(length, options)
-    strings = random_char_arr ++ random_strings
+    random_char_str = Enum.map(new_arr, &get/1)
+    length = length_to_integer - length(random_char_str)
+    random_strings = generate_password(length, new_arr)
+    strings = random_char_str ++ random_strings
+
     invalid_option? = false in strings
 
     case invalid_option? do
@@ -72,12 +72,6 @@ defmodule PwdGen do
     end
   end
 
-  defp extracted_true_values(options) do
-    Enum.reduce(options, [], fn {k, v}, acc ->
-      if v |> String.trim() |> String.to_existing_atom(), do: [k | acc], else: acc
-    end)
-  end
-
   defp get("lowercase_letter") do
     <<Enum.random(?a..?z)>>
   end
@@ -87,7 +81,7 @@ defmodule PwdGen do
   end
 
   defp get("numbers") do
-    <<Enum.random(0..9)>>
+    Integer.to_string(Enum.random(0..9))
   end
 
   defp get("symbols") do
@@ -100,5 +94,11 @@ defmodule PwdGen do
 
   defp generate_password(length, options) do
     Enum.map(1..length, fn _ -> options |> Enum.random() |> get() end)
+  end
+
+  defp extracted_true_values(options) do
+    options
+    |> Enum.filter(fn {_k, v} -> v == "true" end)
+    |> Enum.map(fn {k, _v} -> k end)
   end
 end
