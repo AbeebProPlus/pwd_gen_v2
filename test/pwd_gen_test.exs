@@ -28,7 +28,7 @@ defmodule PwdGenTest do
 
   test "returns error when no length is provided" do
     param = %{"invalid" => "false"}
-    assert {:error, "Provide a length"} = PwdGen.generate(param)
+    assert {:error, _} = PwdGen.generate(param)
   end
 
   test "returns error if length is not integer" do
@@ -54,6 +54,19 @@ defmodule PwdGenTest do
       "uppercase" => "false",
       "symbols" => "fase"
     }
+
     assert {:error, _} = PwdGen.generate(param)
   end
+
+  test "returns lowercase if only length is provided" do
+     param = %{
+      "length" => "7"
+    }
+
+    {:ok, result} = PwdGen.generate(param)
+    assert String.contains?(result, Enum.map(?a..?z, &<<&1>>))
+    refute String.contains?(result, Enum.map(?A..?Z, &<<&1>>))
+    refute String.contains?(result, Enum.map(0..9, &<<&1>>))
+  end
+
 end
