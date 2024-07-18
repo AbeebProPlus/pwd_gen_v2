@@ -46,4 +46,14 @@ defmodule PwdGenTest do
 
     assert {:error, "Provide boolean data"} = PwdGen.generate(param)
   end
+
+  test "returns error when no invalid option" do
+    param = %{
+      "length" => "1",
+      "n" => "fase",
+      "uppercase" => "false",
+      "symbols" => "fase"
+    }
+    assert {:error, _} = PwdGen.generate(param)
+  end
 end
